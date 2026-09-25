@@ -1,0 +1,17 @@
+# Bizzzup AI Labs - robots.txt
+# https://ai.bizzzup.com
+
+User-agent: *
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+# Sitemap
+Sitemap: https://ai.bizzzup.com/sitemap.xml
