@@ -9,6 +9,7 @@ npm run dev      # start dev server (localhost:3000)
 npm run build    # production build
 npm run start    # run production build
 npm run lint     # eslint (flat config: eslint.config.mjs)
+npx tsc --noEmit # typecheck only (no script for it; `npm run build` also typechecks)
 ```
 
 No test suite exists in this repo. Visual verification is done by driving the dev server with Playwright and saving screenshots to `../review/` (outside this repo).
@@ -61,10 +62,16 @@ No decorative ambient animation (infinite pulses, rotating rings, floating orbs,
 
 ### Design tokens
 
-Tokens are CSS custom properties in `src/app/globals.css` under `@theme inline`, consumed as Tailwind v4 utilities (e.g. `bg-bg-deep`, `text-text-secondary`). The palette is a **light "studio" system** (no dark mode), with commented contrast ratios: Ivory canvas `--color-bg-deep #f7f4ee`, Stone `--color-bg-surface`, Paper `--color-bg-card`, Mist `--color-bg-mist`; Ink/Graphite/Pewter text; indigo `--color-accent-1 #4f46e5` used in rare doses (hover `--color-accent-1-hover #2e2a8c`, use `hover:bg-accent-1-hover` on filled buttons, never `hover:opacity-*`); teal `--color-accent-2 #1f6f65` is the text-safe teal, `--color-accent-2-mark` is for dots/lines only. Status feedback never uses red/green/amber. The OG image (`opengraph-image.tsx`) and the contact email template can't read CSS vars and hardcode hex values; update them if the palette changes.
+Tokens are CSS custom properties in `src/app/globals.css` under `@theme inline` (the source of truth; `design-system-reference.md` at the repo root describes an older palette with different token names like `bg-base #FAFAF9` and is stale, so don't take values from it), consumed as Tailwind v4 utilities (e.g. `bg-bg-deep`, `text-text-secondary`). The palette is a **light "studio" system** (no dark mode), with commented contrast ratios: Ivory canvas `--color-bg-deep #f7f4ee`, Stone `--color-bg-surface`, Paper `--color-bg-card`, Mist `--color-bg-mist`; Ink/Graphite/Pewter text; indigo `--color-accent-1 #4f46e5` used in rare doses (hover `--color-accent-1-hover #2e2a8c`, use `hover:bg-accent-1-hover` on filled buttons, never `hover:opacity-*`); teal `--color-accent-2 #1f6f65` is the text-safe teal, `--color-accent-2-mark` is for dots/lines only. Status feedback never uses red/green/amber. The OG image (`opengraph-image.tsx`) and the contact email template can't read CSS vars and hardcode hex values; update them if the palette changes.
 
 Buttons are sentence case. Filled primary (`bg-accent-1 hover:bg-accent-1-hover !text-white font-display font-semibold`) is reserved for "Book an AI audit" and the footer "Start a project"; other CTAs are quiet bordered buttons or text-link-plus-arrow.
 
 ## Environment variables
 
-`.env.local` (gitignored; see `.env.example`): `GOOGLE_API_KEY` (chat), `RESEND_API_KEY` (contact), optional `GOOGLE_SITE_VERIFICATION`, `BING_SITE_VERIFICATION`, `NEXT_PUBLIC_GA_MEASUREMENT_ID`. Everything degrades gracefully when absent.
+`.env.local` (gitignored; there is no `.env.example`, since `.gitignore`'s `.env*` also excludes it): `GOOGLE_API_KEY` (chat), `RESEND_API_KEY` (contact), optional `GOOGLE_SITE_VERIFICATION`, `BING_SITE_VERIFICATION`, `NEXT_PUBLIC_GA_MEASUREMENT_ID`. Everything degrades gracefully when absent.
+
+## Non-code files
+
+- `AGENTS.md` is the Codex copy of this file. Keep the two in sync when either changes.
+- `docs/` holds internal audits from one point in time (GEO, entity consistency, case-study evidence) and is not published. Some of it is out of date (e.g. `geo-measurement.md` says no analytics is installed, but GA is wired in `layout.tsx`), so check claims against the code.
+- `layout.md` is a leftover task prompt, not documentation.
