@@ -1,6 +1,6 @@
 # AGENTS.md
 
-This file provides guidance to Codex (Codex.ai/code) when working with code in this repository.
+This file provides guidance to Codex when working with code in this repository.
 
 ## Commands
 
@@ -11,62 +11,70 @@ npm run start    # run production build
 npm run lint     # eslint (flat config: eslint.config.mjs)
 ```
 
-No test suite exists in this repo.
+No test suite exists. Visual verification is done by driving the dev server with Playwright and saving screenshots to `../review/`.
 
 ## Deployment
 
-Deploys as a Docker image to Google Cloud Run (`asia-south1`). `next.config.ts` sets `output: "standalone"` for this. `cloud_run.bat` builds, tags, pushes to Artifact Registry, and runs `gcloud run deploy` — it is a manual local script, not CI. Bump `IMAGE_TAG` before re-running. `Dockerfile` is a 3-stage build (deps → builder → runner) running as non-root `nextjs` user on port 3000.
+Deploys as a Docker image to Google Cloud Run (`asia-south1`). `next.config.ts` sets `output: "standalone"` for this. `cloud_run.bat` is a manual local deploy script, not CI. It builds, tags, pushes to Artifact Registry, and runs `gcloud run deploy`; bump `IMAGE_TAG` before re-running. `Dockerfile` is a 3-stage build (deps -> builder -> runner) running as non-root `nextjs` on port 3000.
 
 ## Architecture
 
-Marketing site for Bizzzup AI Labs, built with Next.js App Router (Next 16 / React 19), Tailwind v4, and Framer Motion. Four routes under `src/app/`:
+Marketing site for Bizzzup AI Labs (`SITE_URL` https://ai.bizzzup.com), built with Next.js App Router (Next 16 / React 19), Tailwind v4, and Framer Motion.
 
-- **`/` (`page.tsx`)** — the main conversion page: `Navigation`, `Hero`, `ProofAndTrust`, `FeatureCards`, `Projects`, `FlagshipProcess`, `BuiltForProductionSummary`, `Testimonials`, `TeamPreview`, `Contact`, `Footer`, in that order, separated by `<div className="section-divider" />`. Sections are self-contained and take no props — reorder/add by editing this file only.
-- **`/process`** — "How We Work" page: a hero block plus `EngagementModels` and `BuiltForProduction`.
-- **`/about`** — `Team` section only.
-- **`/work`** and **`/work/[slug]`** — portfolio index (renders `src/components/work/WorkExplorer.tsx`) and per-project detail pages, sourced from `src/data/projects.ts`. `src/app/sitemap.ts` generates a sitemap entry per project slug from that same file.
+### Homepage: The Connected Build
 
-Every route composes `Navigation` and `Footer` (from `src/components/sections/`) around its content; there's no shared layout route group, so each `page.tsx` imports them itself.
+`/` renders only `Navigation`, `ConnectedJourney`, and `Footer`. The homepage is one client component, `src/components/sections/ConnectedJourney.tsx`, styled by `src/app/journey.css` plus shared `.cb-*` classes from `connected-build.css`.
 
-`src/components/ui/` holds cross-cutting interactive widgets: `ChatBot.tsx` (floating chat, mounted globally in `layout.tsx` so it appears on every route), `ProjectDetailModal.tsx` (detail overlay for Projects), `ProjectMedia.tsx`, `SystemGraph.tsx` / `HeroWorkflowVisual.tsx` (animated diagram widgets used in the Hero).
+Older stacked-section homepage components (`Hero`, `ProofAndTrust`, `FeatureCards`, `Projects`, `FlagshipProcess`, `Testimonials`, `TeamPreview`, and related sections) still exist in `src/components/sections/`, but they are not on `/`. `ConnectedJourney` reuses text from them and embeds `Contact` for the final chapter.
 
-### Projects carousel (`Projects.tsx`)
+How the homepage works:
 
-Auto-advances every 7s (`AUTO_ADVANCE_MS`). Hover over the carousel pauses temporarily; ANY manual interaction (dot click, swipe, arrow key) permanently disables auto-advance (`autoEnabled` flag); a pause/play toggle beside the dots (`aria-pressed`) also controls it and is hidden under reduced motion. Arrow keys are scoped to the viewport div (`tabIndex={0}` + `onKeyDown`) — never re-attach them to `window`, that regresses a fixed bug where the carousel moved while typing in the contact form.
+- A sticky stage (`.jr-stage`, 100svh) holds generated studio photographs from `public/connected/`, including `-960` variants. Chapter content (`.jr-flow`) scrolls over it in normal flow via `margin-top: -100svh`. Chapter ids are `ch-hero`, `ch-caption`, `ch-medi`, `ch-more`, `ch-services`, `ch-process`, `ch-trust`, and `ch-contact`.
+- Real product screenshots are placed onto plate displays with CSS `matrix3d` homography (`homography()` and `.cb-quad` elements with `data-quad`). Quad corners are hand-measured pixel coordinates on 1920x1080 plates (`FACE_1`, `SCREEN_1`, `SCREEN_2`, `SERVICE_PANES`, `STEP_ANCHORS`, `RAIL`) normalized with `px(x, y)`. Re-measure these if a plate is regenerated. Generated plates must never contain interface text; the page composites real UI.
+- Scroll is handled by a single rAF loop that lerps toward `window.scrollY`, stops when settled, and calls `render()`. Style writes go through a delta cache (`set()`) so unchanged values are not rewritten. Chapter positions are measured in `layout()` and updated by a `ResizeObserver`.
+- `GATES` media queries (phones, portrait tablets, coarse-pointer portrait, short landscape phones, and `prefers-reduced-motion`) disable the scroll-driven stage and show a static sequence. The list in `ConnectedJourney.tsx` must match the corresponding media queries in `journey.css`.
 
-### API routes (`src/app/api/*/route.ts`)
+`AssemblyHero.tsx` (scroll-scrubbed video using `public/hero/` and `assembly-hero.css`) and `ConnectedBuild.tsx` (`connected-build.css`) are earlier hero iterations. They are unused on `/`, but their CSS is still imported by `globals.css`.
 
-- **`api/chat`** — proxies chat messages to Gemini (`@google/generative-ai`, model `gemini-2.0-flash`) using `SYSTEM_PROMPT` from `src/data/chatContext.ts` as the system instruction, and streams the reply back as SSE (`data: {...}\n\n`, terminated with `data: [DONE]`). The client message history (OpenAI-style `{role, content}[]`) is translated to Gemini's `{role: "user"|"model", parts}` format, with the last message sent via `sendMessageStream` and the rest as history. Requires `GOOGLE_API_KEY` env var (lazily instantiated so the build doesn't fail without it).
-- **`api/contact`** — sends the contact form via the Resend API (`RESEND_API_KEY` env var). Returns 503 if the key is missing, escapes all user input before interpolating into the HTML email body.
-- Both routes share `createRateLimiter(limit, windowMs)` from `src/lib/rateLimit.ts` — an in-memory `Map` keyed by IP (from `x-forwarded-for`/`x-real-ip`), pruned once it exceeds 500 entries. This resets on redeploy/restart and does not work across multiple instances — fine for Cloud Run's low-traffic min-instances=0 setup, but don't assume it enforces a global limit.
+### Other Routes
 
-### Chatbot content
+- `/process` - hero block plus `EngagementModels` and `BuiltForProduction`.
+- `/about` - `Team` section.
+- `/services` and `/services/[slug]` - sourced from `src/data/services.ts`; detail pages render `src/components/services/ServicePageTemplate.tsx`.
+- `/work` and `/work/[slug]` - portfolio index (`src/components/work/WorkExplorer.tsx`) and per-project pages sourced from `src/data/projects.ts`.
+- `/privacy-policy` and `/content-rights` - render `src/components/legal/LegalPage.tsx` with page-specific `sections` arrays and an `updated` date. Add legal pages by writing a new sections array, not new markup.
 
-To change what the AI assistant knows or how it talks, edit `SYSTEM_PROMPT` (and `QUICK_REPLIES`) in `src/data/chatContext.ts` — this is the only place bot behavior/knowledge is defined; there's no RAG or external knowledge base wired in.
+Every route composes `Navigation` and `Footer` itself and wraps content in `<main id="main" tabIndex={-1}>` for the skip link. Per-page metadata uses `pageMetadata({ title, description, path })` from `src/lib/site.ts`. `src/app/layout.tsx` centralizes site-wide metadata, JSON-LD, fonts, Google Analytics, and mounts `ChatBot` globally.
 
-### Animation conventions
+`src/hooks/useIsMobile.ts` is an SSR-safe media-query hook based on `useSyncExternalStore`; reuse it for responsive JS logic instead of adding new `matchMedia` listeners.
 
-**Ambient animation is removed by design** — no infinite pulses, rotating rings, floating orbs, or shimmer anywhere. The ONLY perpetually animated elements are the hero workflow console (`HeroWorkflowVisual.tsx`) and the ChatBot's own keyframes (`pulse-ring`, `typing-dot` in globals.css — keep those). Don't reintroduce decorative infinite animations.
+### API Routes
 
-`src/lib/animations.ts` centralizes Framer Motion primitives: `EXPO_OUT` easing, `containerVariants`/`fadeUpVariants`/`fadeUpBlurVariants` (stagger + fade-up-on-scroll pattern used throughout sections), `scaleLineVariants` (decorative line reveals), and the `useReplay(ref)` hook — sections animate ONCE on first viewport entry and never replay on scroll-up (returns `[isInView, replayKey]`; the key flips 0→1 on first reveal). Reuse these instead of hand-rolling new variants. Note `fadeUpVariants`/`fadeUpBlurVariants` keep `hidden.opacity: 1` (only offsetting `y`) intentionally, so content stays visible for full-page screenshot tools that never trigger the real scroll-into-view. The hero entrance completes in ~1.2s (0.02s/word stagger; entrance gate 1200ms).
+- `api/chat` proxies chat to Gemini (`@google/generative-ai`, model `gemini-2.5-flash`) with `SYSTEM_PROMPT` from `src/data/chatContext.ts`, streaming SSE (`data: {...}\n\n`, terminated by `data: [DONE]`). Client history is translated from `{role, content}[]` into Gemini's `{role: "user"|"model", parts}` shape; the last message is sent with `sendMessageStream`. The client is lazily instantiated so builds do not need `GOOGLE_API_KEY`.
+- `api/contact` sends the contact form via Resend. It returns 503 if `RESEND_API_KEY` is missing and escapes all user input before interpolating HTML email.
+- Both share `createRateLimiter(limit, windowMs)` from `src/lib/rateLimit.ts`, an in-memory per-IP `Map`. It resets on restart and is not shared across instances.
 
-### Design tokens
+Chatbot knowledge and tone live only in `SYSTEM_PROMPT` and `QUICK_REPLIES` in `src/data/chatContext.ts`; there is no RAG or external knowledge base wired in.
 
-Color/font tokens are defined as CSS custom properties in `src/app/globals.css` under `@theme inline` (`--color-bg-*`, `--color-accent-*`, `--color-text-*`, `--font-*`) and consumed via Tailwind v4's automatic `@theme` integration (e.g. `bg-bg-deep`, `text-text-secondary`). The palette is the **warm charcoal system from `design-system-reference.md`** (now the implemented reality, not just a target): `--color-accent-1: #44403C` with `--color-accent-1-hover: #292524` (use `hover:bg-accent-1-hover` on filled buttons — never `hover:opacity-*`), `--color-accent-2: #B45309` (amber, sparingly), `--color-accent-3: #6B8A9E` (slate blue, sparingly). `--gradient-1` is a subtle charcoal gradient used by `.gradient-text`, which appears ONLY in the Hero headline ("live in 45 days.") — don't add gradient text elsewhere.
+### Animation
 
-### Button conventions
+No decorative ambient animation: no infinite pulses, rotating rings, floating orbs, or shimmer. Motion should be tied to scroll or to one entrance. The only exceptions are the ChatBot keyframes (`pulse-ring`, `typing-dot` in `globals.css`).
 
-Two button variants + text links, all sentence case (no uppercase/tracking-widest labels):
-- **Primary** (filled `clip-corner-md bg-accent-1 hover:bg-accent-1-hover !text-white font-display font-semibold`): ONLY "Book an AI audit" instances (nav, hero, contact submit) and the footer "Start a project".
-- **Secondary** (quiet border, `border-border text-text-primary hover:border-border-accent`): hero "View our work".
-- **Text link + arrow** (`group inline-flex items-center gap-2 font-display font-semibold text-text-primary hover:text-accent-2` + arrow SVG with `group-hover:translate-x-0.5`): all other CTAs ("See our engagement models", "View all 14 projects", "Meet the full team", "View details", …). No rounded-full mono pills.
+`src/lib/animations.ts` centralizes Framer Motion primitives: `EXPO_OUT`, `containerVariants`, `fadeUpVariants`, `fadeUpBlurVariants`, `scaleLineVariants`, and `useReplay(ref)`, which reveals once and never replays. `fadeUp*` variants intentionally keep `hidden.opacity: 1` so screenshot tools that do not trigger scroll still see content.
 
-Type scale: hero h1 `clamp(2.6rem, 4vw + 1rem, 4.2rem)` is the largest text on the site; section h2s cap at `clamp(1.9rem, 3.5vw, 2.8rem)`.
+### Design Tokens
 
-### SEO / metadata
+Tokens are CSS custom properties in `src/app/globals.css` under `@theme inline`, consumed as Tailwind v4 utilities. The site is a light "studio" system with no dark mode. The current palette is documented in `design-system-reference.md`; update `src/app/opengraph-image.tsx` and the contact email template too if hardcoded palette values change.
 
-`src/app/layout.tsx` centralizes site-wide metadata (OpenGraph, Twitter cards, JSON-LD `Organization`/`LocalBusiness`/`WebSite` structured data) and font loading (`next/font/google`: Plus Jakarta Sans, IBM Plex Sans, IBM Plex Mono) for all routes. `/process`, `/about`, and `/work` each additionally export their own `metadata` (title/description) from their `page.tsx`. `src/app/sitemap.ts` and `src/app/opengraph-image.tsx` are generated via Next's file conventions.
+Use primary filled buttons (`bg-accent-1 hover:bg-accent-1-hover !text-white font-display font-semibold`) only for "Book an AI audit" and footer "Start a project". Other CTAs should be quiet bordered buttons or text links with arrows. Button labels are sentence case, not uppercase/tracked.
 
-## Environment variables
+## Environment Variables
 
-Defined in `.env.local` (gitignored): `GOOGLE_API_KEY` (Gemini, used by `api/chat`), `RESEND_API_KEY` (Resend, used by `api/contact`). Both API routes degrade gracefully (lazy init / 503) when their key is absent so local dev and CI builds don't require them.
+`.env.local` is gitignored. See `.env.example`. Variables:
+
+- `GOOGLE_API_KEY` for chat.
+- `RESEND_API_KEY` for contact form email.
+- Optional `GOOGLE_SITE_VERIFICATION`, `BING_SITE_VERIFICATION`, and `NEXT_PUBLIC_GA_MEASUREMENT_ID`.
+
+API routes degrade gracefully when keys are absent.
+
