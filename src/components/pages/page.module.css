@@ -1,0 +1,31 @@
+/* Inner pages: calmer, reading-first. */
+.head { padding: clamp(48px, 7vw, 96px) 0 clamp(32px, 4vw, 56px); display: grid; gap: 18px; }
+.kicker { color: var(--graphite); display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+.h1 { font-size: clamp(44px, 6vw, 92px); letter-spacing: -0.035em; max-width: 18ch; }
+.promise { font-size: clamp(24px, 2.4vw, 34px); line-height: 1.25; font-style: italic; color: var(--cobalt); max-width: 30ch; }
+.intro { font-size: 21px; color: var(--graphite); max-width: 62ch; }
+.band { padding: clamp(40px, 5vw, 72px) 0; }
+.band + .band { padding-top: 0; }
+.cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 clamp(32px, 5vw, 80px); }
+.block { padding: 22px 0 28px; border-top: 1px solid var(--line-strong); }
+.block h2 { font-family: var(--mono); font-size: 12.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--graphite); margin-bottom: 14px; }
+.block ul { list-style: none; display: grid; gap: 10px; }
+.block li { position: relative; padding-left: 20px; font-size: 18px; line-height: 1.45; }
+.block li::before { content: ""; position: absolute; left: 0; top: 0.62em; width: 8px; height: 1.5px; background: var(--cobalt); }
+.block[data-tone="limit"] li::before { background: var(--pewter); }
+.block[data-tone="guard"] li::before { background: var(--amber); }
+.chips { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+.chips li { font-family: var(--mono); font-size: 12px; letter-spacing: 0.04em; padding: 5px 10px; border: 1px solid var(--line-strong); background: var(--ivory); }
+.chips li::before { display: none; }
+.sectionTitle { font-size: clamp(30px, 3.2vw, 48px); letter-spacing: -0.025em; margin-bottom: 18px; }
+.prose { display: grid; gap: 16px; max-width: 68ch; }
+.prose p { font-size: 19px; }
+.next { background: var(--cool); padding: clamp(56px, 7vw, 96px) 0; }
+.nextGrid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 32px; align-items: end; }
+.nextTitle { font-size: clamp(32px, 3.6vw, 54px); letter-spacing: -0.03em; }
+.nextActions { display: flex; flex-wrap: wrap; gap: 16px 24px; align-items: center; justify-content: flex-end; }
+.evGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 clamp(32px, 5vw, 80px); }
+@media (max-width: 899.98px) {
+  .cols, .evGrid, .nextGrid { grid-template-columns: 1fr; }
+  .nextActions { justify-content: flex-start; }
+}

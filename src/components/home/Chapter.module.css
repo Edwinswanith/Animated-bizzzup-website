@@ -1,0 +1,30 @@
+.chapter { position: relative; padding: clamp(72px, 9vw, 128px) 0; }
+.chapter[data-tone="cool"] { background: var(--cool); }
+.grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(32px, 5vw, 96px); align-items: start; }
+.chapter[data-layout="stage-left"] .text { order: 2; }
+.chapter[data-layout="stage-wide"] .grid { grid-template-columns: 1fr; }
+.text { display: grid; gap: 24px; align-content: start; }
+.kicker { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; color: var(--ink); }
+.kicker > span:first-child { color: var(--cobalt); }
+.grammar { display: inline-flex; flex-wrap: wrap; gap: 6px; color: var(--pewter); }
+.grammar b { font-weight: 400; margin-right: 6px; color: var(--line-strong); }
+.title { font-size: clamp(38px, 4.4vw, 68px); letter-spacing: -0.03em; max-width: 16ch; }
+.body { display: grid; gap: 14px; color: var(--graphite); max-width: 46ch; }
+.evidence { display: grid; gap: 0; }
+.services { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 22px; color: var(--pewter); }
+/* The stage follows the reader through the chapter with native sticky positioning (no pin). */
+.stage { position: sticky; top: calc(var(--header-h) + 32px); }
+.chapter[data-layout="stage-wide"] .stage { position: relative; top: auto; }
+.chapter[data-layout="stage-wide"] .title { max-width: 22ch; }
+
+@media (max-width: 899.98px) {
+  /* Phones read friction → transformation → evidence, in that order. */
+  .grid { grid-template-columns: 1fr; gap: 24px; }
+  .text { display: contents; }
+  .kicker { order: 1; }
+  .title { order: 2; }
+  .body { order: 3; }
+  .stage { position: relative; top: auto; order: 4; margin: 8px 0; }
+  .evidence { order: 5; }
+  .services { order: 6; }
+}

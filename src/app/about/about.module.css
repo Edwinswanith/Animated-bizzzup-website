@@ -1,0 +1,11 @@
+.team { list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 28px; margin-top: 28px; }
+.team li { display: grid; gap: 6px; align-content: start; border-top: 2px solid var(--cobalt); padding-top: 14px; }
+.name { font-size: 28px; }
+.role { color: var(--cobalt); }
+.bio { color: var(--graphite); font-size: 17.5px; }
+.links { display: flex; gap: 16px; margin-top: 6px; }
+.regions { list-style: none; display: grid; gap: 10px; margin-top: 20px; }
+.regions li { font-size: 20px; padding: 10px 0; border-top: 1px solid var(--line); }
+.regions .mono { display: inline-block; width: 140px; color: var(--cobalt); }
+@media (max-width: 1099.98px) { .team { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 599.98px) { .team { grid-template-columns: 1fr; } .regions .mono { display: block; } }
