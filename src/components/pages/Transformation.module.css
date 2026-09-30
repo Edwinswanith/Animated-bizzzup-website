@@ -1,0 +1,20 @@
+.t { margin: 0; padding: 22px 0 8px; border-top: 1px solid var(--line-strong); border-bottom: 1px solid var(--line-strong); }
+.title { color: var(--graphite); margin-bottom: 22px; }
+.track { position: relative; }
+.link { position: absolute; left: 7px; right: 7px; top: 7px; height: 2px; background: linear-gradient(90deg, var(--teal), var(--cobalt) 55%, var(--amber)); transform-origin: 0 50%; }
+.steps { list-style: none; display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 16px; }
+.step { position: relative; display: grid; gap: 12px; align-content: start; }
+.mark { width: 16px; height: 16px; border-radius: 50%; background: var(--limestone); border: 2px solid var(--pewter); position: relative; z-index: 1; }
+.step[data-kind="friction"] .mark { border-style: dashed; border-color: var(--pewter); }
+.step[data-kind="structure"] .mark { border-color: var(--cobalt); }
+.step[data-kind="system"] .mark { background: var(--cobalt); border-color: var(--cobalt); }
+.step[data-kind="action"] .mark { background: var(--amber); border-color: var(--amber); }
+.step[data-kind="gate"] .mark { border-radius: 2px; border-color: var(--amber); }
+.label { font-size: 18px; line-height: 1.35; }
+.step[data-kind="friction"] .label { color: var(--graphite); font-style: italic; }
+.note { margin-top: 18px; font-size: 15px; color: var(--pewter); }
+@media (max-width: 899.98px) {
+  .link { left: 7px; right: auto; top: 7px; bottom: 7px; width: 2px; height: auto; background: linear-gradient(180deg, var(--teal), var(--cobalt) 55%, var(--amber)); transform-origin: 50% 0; }
+  .steps { grid-template-columns: 1fr; gap: 18px; }
+  .step { grid-template-columns: 16px 1fr; gap: 14px; }
+}

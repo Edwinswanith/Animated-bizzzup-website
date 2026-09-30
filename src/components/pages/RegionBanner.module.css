@@ -1,0 +1,14 @@
+.banner { position: relative; height: clamp(180px, 26vw, 340px); overflow: hidden; background: var(--sand); }
+.crop { position: absolute; inset: 0; }
+.crop img { width: 100%; height: 100%; object-fit: cover; }
+.inner { position: relative; height: 100%; display: flex; flex-direction: column; justify-content: space-between; padding-top: 18px; padding-bottom: 18px; }
+.trail ol { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+.trail li { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; background: color-mix(in srgb, var(--limestone) 88%, transparent); padding: 4px 8px; }
+.trail li + li::before { content: "→ "; color: var(--pewter); }
+.trail a { text-decoration: none; color: var(--graphite); }
+.trail a:hover { color: var(--cobalt); }
+.tag { align-self: flex-start; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 10px 14px; background: color-mix(in srgb, var(--limestone) 90%, transparent); }
+.mini { width: 44px; height: 26px; }
+.on { fill: var(--cobalt); }
+.off { fill: none; stroke: var(--line-strong); stroke-width: 1; }
+.grammar { color: var(--pewter); font-size: 11px; }

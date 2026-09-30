@@ -1,0 +1,24 @@
+.closing { position: relative; padding: clamp(88px, 11vw, 160px) 0; background: var(--limestone); overflow: hidden; }
+/* K3: the resolved terrain; content sits in its open haze, the amber channel rises beneath the form. */
+.world { position: absolute; inset: 0; pointer-events: none; }
+.world img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 100%; }
+.world::after { content: ""; position: absolute; inset: 0; background:
+  linear-gradient(90deg, color-mix(in srgb, var(--limestone) 88%, transparent) 0%, color-mix(in srgb, var(--limestone) 70%, transparent) 40%, transparent 62%),
+  linear-gradient(180deg, color-mix(in srgb, var(--limestone) 55%, transparent) 0%, transparent 45%); }
+@media (max-width: 899.98px) {
+  .world::after { background: linear-gradient(180deg, color-mix(in srgb, var(--limestone) 92%, transparent) 0%, color-mix(in srgb, var(--limestone) 80%, transparent) 45%, transparent 75%); }
+}
+.grid { position: relative; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(40px, 6vw, 112px); align-items: start; }
+.lead { display: grid; gap: 20px; }
+.lead > .mono:first-child { color: var(--amber-text); }
+.title { font-size: clamp(38px, 4.4vw, 66px); letter-spacing: -0.03em; }
+.sub { font-size: 20px; color: var(--graphite); max-width: 36ch; }
+.direct { display: grid; gap: 12px; margin: 12px 0 0; }
+.direct div { display: grid; gap: 2px; border-top: 1px solid var(--line-strong); padding-top: 10px; }
+.direct dt { color: var(--pewter); }
+.direct dd { margin: 0; font-size: 18px; overflow-wrap: anywhere; }
+.direct a { text-decoration: none; }
+.direct a:hover { color: var(--cobalt); text-decoration: underline; }
+.resp { color: var(--graphite); }
+.formWrap { background: color-mix(in srgb, var(--ivory) 88%, transparent); padding: clamp(20px, 3vw, 36px); border-top: 3px solid var(--amber); }
+@media (max-width: 899.98px) { .grid { grid-template-columns: 1fr; } }

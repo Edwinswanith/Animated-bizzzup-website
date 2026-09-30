@@ -1,0 +1,22 @@
+.formerly { font-size: 0.7em; color: var(--pewter); font-style: normal; }
+.client { color: var(--graphite); }
+.metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0 28px; margin: 0 0 clamp(32px, 4vw, 56px); }
+.metrics div { display: flex; flex-direction: column-reverse; gap: 4px; border-top: 1px solid var(--line-strong); padding: 12px 0; }
+.metrics dt { color: var(--pewter); }
+.metrics dd { margin: 0; font-size: clamp(28px, 2.8vw, 40px); line-height: 1.05; }
+.shot { margin: clamp(40px, 5vw, 64px) 0 0; max-width: 760px; display: grid; gap: 10px; }
+.shot img { width: 100%; height: auto; border: 1px solid var(--line-strong); background: #fff; }
+.shot figcaption { color: var(--pewter); }
+.sections { display: grid; gap: 0; }
+.section { display: grid; grid-template-columns: 72px minmax(0, 4fr) minmax(0, 7fr); gap: 20px; padding: 26px 0; border-top: 1px solid var(--line-strong); }
+.snum { color: var(--cobalt); padding-top: 8px; }
+.value .snum { color: var(--amber-text); }
+.stitle { font-size: clamp(24px, 2.2vw, 32px); }
+.sbody { font-size: 18.5px; color: var(--graphite); }
+.foot { margin-bottom: 24px; }
+.related { display: flex; flex-wrap: wrap; gap: 12px 22px; }
+.nextProject { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px 20px; padding: 28px 0 64px; border-top: 1px solid var(--line-strong); }
+.nextProject .mono { color: var(--pewter); }
+.nextName { font-size: clamp(26px, 2.6vw, 38px); text-decoration: none; }
+.nextName:hover { color: var(--cobalt); }
+@media (max-width: 899.98px) { .section { grid-template-columns: 1fr; gap: 8px; } }

@@ -1,0 +1,47 @@
+.map { position: relative; background: var(--sand); }
+.pin { position: relative; height: calc(100svh - var(--header-h)); min-height: 640px; overflow: hidden; }
+.world { position: absolute; inset: 0; will-change: transform; }
+.world img { width: 100%; height: 100%; object-fit: cover; }
+/* Only used by the desktop zoom; hidden at rest so reduced motion and phones never show it. */
+.detail { position: absolute; inset: 0; opacity: 0; pointer-events: none; will-change: transform, opacity; }
+.detail img { width: 100%; height: 100%; object-fit: cover; }
+.overlay { position: relative; height: 100%; }
+.intro {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 2;
+  width: min(440px, 36%); text-align: center; display: grid; gap: 12px;
+  background: color-mix(in srgb, var(--limestone) 90%, transparent); padding: 24px 28px;
+}
+.title { font-size: clamp(30px, 2.8vw, 44px); letter-spacing: -0.025em; }
+.lede { font-size: 17px; color: var(--graphite); }
+.regions { list-style: none; }
+.region {
+  position: absolute; left: var(--x); top: var(--y); z-index: 1; width: min(280px, 21vw);
+  display: grid; gap: 4px; padding: 10px 14px 12px;
+  background: color-mix(in srgb, var(--limestone) 84%, transparent);
+}
+/* Survey marker: a dot on the terrain with a leader line into the label. */
+.marker { position: absolute; top: 18px; left: -46px; width: 46px; height: 12px; pointer-events: none; }
+.dot { position: absolute; left: 0; top: 0; width: 12px; height: 12px; border-radius: 50%; background: var(--cobalt); box-shadow: 0 0 0 4px color-mix(in srgb, var(--limestone) 70%, transparent); }
+.leader { position: absolute; left: 12px; right: 0; top: 5.5px; height: 1px; background: var(--cobalt); }
+.region[data-side="right"] .marker { left: auto; right: -46px; }
+.region[data-side="right"] .dot { left: auto; right: 0; }
+.region[data-side="right"] .leader { left: 0; right: 12px; }
+.num { color: var(--cobalt); }
+.rname { font-size: 30px; display: flex; align-items: baseline; gap: 10px; }
+.grammar { font-size: 10.5px; color: var(--pewter); }
+.svcs { list-style: none; display: grid; gap: 2px; margin-top: 4px; }
+.svcs a { font-size: 17px; text-decoration: none; }
+.svcs a:hover { color: var(--cobalt); text-decoration: underline; text-underline-offset: 3px; }
+.count { justify-self: start; margin-top: 6px; color: var(--graphite); text-decoration: none; border-bottom: 1px solid var(--line-strong); }
+.count:hover { color: var(--cobalt); border-color: var(--cobalt); }
+
+@media (max-width: 899.98px) {
+  .detail { display: none; }
+  .map { background: var(--limestone); }
+  .pin { height: auto; min-height: 0; overflow: visible; }
+  .world { position: relative; inset: auto; aspect-ratio: 16 / 9; }
+  .overlay { height: auto; padding-top: 28px; padding-bottom: 56px; }
+  .intro { position: static; transform: none; width: auto; text-align: left; padding: 0; background: none; margin-bottom: 20px; }
+  .region { position: static; width: auto; margin-bottom: 12px; border-left: 2px solid var(--cobalt); }
+  .marker { display: none; }
+}
