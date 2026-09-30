@@ -1,9 +1,0 @@
-.ev { display: grid; gap: 10px; padding: 18px 0 20px; border-top: 1px solid var(--line-strong); }
-.meta { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; color: var(--pewter); }
-.name { font-size: clamp(26px, 2.2vw, 32px); }
-.name a { text-decoration: none; }
-.name a:hover { color: var(--cobalt); }
-.line { color: var(--graphite); font-size: 18px; max-width: 46ch; }
-.client { color: var(--graphite); }
-.ev[data-compact] .name { font-size: 24px; }
-.ev > :global(.link-arrow) { justify-self: start; }
